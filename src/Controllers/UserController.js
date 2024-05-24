@@ -225,8 +225,8 @@ const updateUser = async (req, res) => {
 
 const getUserFromToken = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
-  console.log(req);
-  console.log(token);
+  console.log("Error:", token);
+
   if (!token) {
     return res.status(401).json({
       message: "No token provided",
@@ -237,9 +237,9 @@ const getUserFromToken = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, "monitor@userapp");
-    console.log(decoded);
+    console.log("Error:", decoded);
     const user = await User.findById(decoded.id);
-
+    console.log("User details:", user);
     if (!user) {
       return res.status(404).json({
         message: "User not found",
@@ -254,6 +254,7 @@ const getUserFromToken = async (req, res) => {
       details: user,
     });
   } catch (error) {
+    console.error("Error:", error);
     res.status(401).json({
       message: "Invalid token",
       status: "FAIL",
