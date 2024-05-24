@@ -223,7 +223,7 @@ const updateUser = async (req, res) => {
   }
 };
 
-const getSingleUserFromToken = async (req, res) => {
+const fetchSingleUserFromToken = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   console.log("Error:", token);
 
@@ -270,5 +270,5 @@ module.exports = {
   deleteUser,
   updateUser,
   loginUser,
-  getSingleUserFromToken,
+  fetchSingleUserFromToken,
 };

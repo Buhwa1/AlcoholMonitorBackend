@@ -6,7 +6,7 @@ const {
   deleteUser,
   updateUser,
   loginUser,
-  getSingleUserFromToken,
+  fetchSingleUserFromToken,
 } = require("../Controllers/UserController");
 
 const authenticateToken = require("../Middleware/authenticationToken");
@@ -25,6 +25,6 @@ router.patch("/update/:id", authenticateToken, updateUser);
 
 router.post("/login", loginUser);
 
-router.get("/single", authenticateToken, getSingleUserFromToken);
+router.get("/single", authenticateToken, fetchSingleUserFromToken);
 
 module.exports = router;
