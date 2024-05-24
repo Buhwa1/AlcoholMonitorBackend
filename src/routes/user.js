@@ -8,20 +8,22 @@ const {
   loginUser,
   getUserFromToken,
 } = require("../Controllers/UserController");
+
+const authenticateToken = require("../middleware/authenticateToken");
 const router = express.Router();
 
-router.get("/list", getUsers);
+router.get("/list", authenticateToken, getUsers);
 
-router.get("/:id", getUser);
+router.get("/:id", authenticateToken, getUser);
 
-router.post("/create", createUser);
+router.post("/create", authenticateToken, createUser);
 
-router.delete("/delete/:id", deleteUser);
+router.delete("/delete/:id", authenticateToken, deleteUser);
 
-router.patch("/update/:id", updateUser);
+router.patch("/update/:id", authenticateToken, updateUser);
 
 router.post("/login", loginUser);
 
-router.get("/single", getUserFromToken);
+router.get("/single", authenticateToken, getUserFromToken);
 
 module.exports = router;
