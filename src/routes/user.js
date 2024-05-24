@@ -10,6 +10,7 @@ const {
 } = require("../Controllers/UserController");
 
 const authenticateToken = require("../Middleware/authenticateToken");
+
 const router = express.Router();
 
 router.get("/list", authenticateToken, getUsers);
