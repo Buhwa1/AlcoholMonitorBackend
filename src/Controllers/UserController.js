@@ -4,6 +4,13 @@ const mongoose = require("mongoose");
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({});
+    if (users.length === 0) {
+      return res.status(404).json({
+        message: "No users found",
+        status: "FAIL",
+        details: [],
+      });
+    }
     res.status(200).json({
       message: "Users fetched successfully",
       status: "OK",
