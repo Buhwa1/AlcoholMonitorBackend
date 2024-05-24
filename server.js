@@ -2,8 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const userRoutes = require("./src/routes/user");
-const jwt = require("jsonwebtoken");
-const authenticateToken = require("./src/Middleware/authenticationToken");
+
 const app = express();
 const mongoose = require("mongoose");
 

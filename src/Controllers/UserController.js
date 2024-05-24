@@ -30,13 +30,13 @@ const getUsers = async (req, res) => {
 const getUser = async (req, res) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({
-      message: "Invalid user ID 1",
-      status: "FAIL",
-      details: "No user found",
-    });
-  }
+  // if (!mongoose.Types.ObjectId.isValid(id)) {
+  //   return res.status(400).json({
+  //     message: "Invalid user ID 1",
+  //     status: "FAIL",
+  //     details: "No user found",
+  //   });
+  // }
 
   try {
     const user = await User.findById(id);
