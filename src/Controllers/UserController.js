@@ -32,7 +32,7 @@ const getUser = async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({
-      message: "Invalid user ID",
+      message: "Invalid user ID 1",
       status: "FAIL",
       details: "No user found",
     });
@@ -160,7 +160,7 @@ const deleteUser = async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({
-      message: "Invalid user ID",
+      message: "Invalid user ID 2",
       status: "FAIL",
       details: "No user found",
     });
@@ -194,7 +194,7 @@ const updateUser = async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({
-      message: "Invalid user ID",
+      message: "Invalid user ID 3",
       status: "FAIL",
       details: "No user found",
     });
