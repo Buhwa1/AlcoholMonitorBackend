@@ -9,14 +9,14 @@ const {
   getUserFromToken,
 } = require("../Controllers/UserController");
 
-const authenticateToken = require("../middleware/authenticateToken");
+const authenticateToken = require("../Middleware/authenticateToken");
 const router = express.Router();
 
 router.get("/list", authenticateToken, getUsers);
 
 router.get("/:id", authenticateToken, getUser);
 
-router.post("/create", authenticateToken, createUser);
+router.post("/create", createUser);
 
 router.delete("/delete/:id", authenticateToken, deleteUser);
 
