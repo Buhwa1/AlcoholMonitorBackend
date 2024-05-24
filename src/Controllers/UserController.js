@@ -5,9 +5,9 @@ const getUsers = async (req, res) => {
   try {
     const users = await User.find({});
     if (users.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         message: "No users found",
-        status: "FAIL",
+        status: "OK",
         details: [],
       });
     }
@@ -32,17 +32,17 @@ const getUser = async (req, res) => {
     return res.status(400).json({
       message: "Invalid user ID",
       status: "FAIL",
-      details: "No user found with the provided ID",
+      details: "No user found",
     });
   }
 
   try {
     const user = await User.findById(id);
     if (!user) {
-      return res.status(404).json({
+      return res.status(200).json({
         message: "User not found",
-        status: "FAIL",
-        details: "No user found with the provided ID",
+        status: "OK",
+        details: "No user found",
       });
     }
     res.status(200).json({
@@ -73,7 +73,7 @@ const createUser = async (req, res) => {
     try {
       const user = await User.create({ email, phoneNumber, password });
       if (user) {
-        return res.status(201).json({
+        return res.status(200).json({
           message: "User created successfully",
           status: "OK",
           details: user,
@@ -102,7 +102,7 @@ const deleteUser = async (req, res) => {
     return res.status(400).json({
       message: "Invalid user ID",
       status: "FAIL",
-      details: "No user found with the provided ID",
+      details: "No user found",
     });
   }
 
@@ -112,7 +112,7 @@ const deleteUser = async (req, res) => {
       return res.status(404).json({
         message: "User not found",
         status: "FAIL",
-        details: "No user found with the provided ID",
+        details: "No user found",
       });
     }
     res.status(200).json({
@@ -136,7 +136,7 @@ const updateUser = async (req, res) => {
     return res.status(400).json({
       message: "Invalid user ID",
       status: "FAIL",
-      details: "No user found with the provided ID",
+      details: "No user found",
     });
   }
 
@@ -146,7 +146,7 @@ const updateUser = async (req, res) => {
       return res.status(404).json({
         message: "User not found",
         status: "FAIL",
-        details: "No user found with the provided ID",
+        details: "No user found",
       });
     }
     res.status(200).json({
