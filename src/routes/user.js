@@ -9,7 +9,7 @@ const {
   getUserFromToken,
 } = require("../Controllers/UserController");
 
-const authenticateToken = require("../Middleware/authenticateToken");
+const authenticateToken = require("../Middleware/authenticationToken");
 
 const router = express.Router();
 
