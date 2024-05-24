@@ -25,6 +25,6 @@ router.patch("/update/:id", authenticateToken, updateUser);
 
 router.post("/login", loginUser);
 
-router.get("/single", authenticateToken, fetchSingleUserFromToken);
+router.get("/single", fetchSingleUserFromToken);
 
 module.exports = router;
