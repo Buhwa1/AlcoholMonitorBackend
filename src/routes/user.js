@@ -8,14 +8,14 @@ const {
 } = require("../Controllers/UserController");
 const router = express.Router();
 
-router.get("/user/list", getUsers);
+router.get("/list", getUsers);
 
-router.get("/user/:id", getUser);
+router.get("/:id", getUser);
 
-router.post("/user/create", createUser);
+router.post("/create", createUser);
 
-router.delete("/user/delete/:id", deleteUser);
+router.delete("/delete/:id", deleteUser);
 
-router.patch("/user/update/:id", updateUser);
+router.patch("/update/:id", updateUser);
 
 module.exports = router;
