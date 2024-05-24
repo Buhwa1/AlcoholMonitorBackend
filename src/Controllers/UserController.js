@@ -1,5 +1,6 @@
 const User = require("../Models/UserModel");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const getUsers = async (req, res) => {
   try {
@@ -71,7 +72,15 @@ const createUser = async (req, res) => {
     password.length > 0
   ) {
     try {
-      const user = await User.create({ email, phoneNumber, password });
+      // Hash the password
+      const saltRounds = 10; // You can adjust the number of salt rounds as needed
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      const user = await User.create({
+        email,
+        phoneNumber,
+        password: hashedPassword,
+      });
       if (user) {
         return res.status(200).json({
           message: "User created successfully",
