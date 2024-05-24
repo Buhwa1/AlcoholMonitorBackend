@@ -121,22 +121,13 @@ const loginUser = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-        status: "FAIL",
-        details: "No user found with the provided email",
-      });
-    }
-
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        message: "Invalid password",
+    if (!user && !isPasswordValid) {
+      return res.status(404).json({
+        message: "Wrong username or email!",
         status: "FAIL",
-        details: "Password does not match",
+        details: "Wrong username or email!",
       });
     }
 
