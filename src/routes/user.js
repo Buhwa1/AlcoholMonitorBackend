@@ -16,7 +16,7 @@ router.get("/list", authenticateToken, getUsers);
 
 router.get("/:id", authenticateToken, getUser);
 
-router.post("/create", authenticateToken, createUser);
+router.post("/create", createUser);
 
 router.delete("/delete/:id", authenticateToken, deleteUser);
 
