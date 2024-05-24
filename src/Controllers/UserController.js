@@ -225,7 +225,7 @@ const updateUser = async (req, res) => {
 
 const getUserFromToken = async (req, res) => {
   const token = req.headers.Authorization?.split(" ")[1];
-
+  console.log(token);
   if (!token) {
     return res.status(401).json({
       message: "No token provided",
