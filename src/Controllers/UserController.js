@@ -135,6 +135,9 @@ const loginUser = async (req, res) => {
       expiresIn: "7d",
     });
 
+    user.token = token;
+    await user.save();
+
     res.status(200).json({
       message: "Login successful",
       status: "OK",
@@ -144,7 +147,7 @@ const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(400).json({
       message: "Login failed",
       status: "FAIL",
       details: error.message,
@@ -221,7 +224,7 @@ const updateUser = async (req, res) => {
 };
 
 const getUserFromToken = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const token = req.headers.Authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({
