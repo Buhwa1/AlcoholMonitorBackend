@@ -1,6 +1,7 @@
 const User = require("../Models/UserModel");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const getUsers = async (req, res) => {
   try {
@@ -60,6 +61,7 @@ const getUser = async (req, res) => {
   }
 };
 
+//SIGN UP USER
 const createUser = async (req, res) => {
   const { email, phoneNumber, password } = req.body;
 
@@ -100,6 +102,61 @@ const createUser = async (req, res) => {
       message: "Complete all fields and try again",
       status: "FAIL",
       details: "Missing or empty fields",
+    });
+  }
+};
+
+//LOGIN USER
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  // Check if email and password are provided
+  if (!email || !password) {
+    return res.status(400).json({
+      message: "Email and password are required",
+      status: "FAIL",
+      details: "Missing email or password",
+    });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        status: "FAIL",
+        details: "No user found with the provided email",
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        message: "Invalid password",
+        status: "FAIL",
+        details: "Password does not match",
+      });
+    }
+
+    const token = jwt.sign({ id: user._id }, "monitor@userapp", {
+      expiresIn: "7d",
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      status: "OK",
+      details: {
+        userId: user._id,
+        token,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Login failed",
+      status: "FAIL",
+      details: error.message,
     });
   }
 };
@@ -172,10 +229,49 @@ const updateUser = async (req, res) => {
   }
 };
 
+const getUserFromToken = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({
+      message: "No token provided",
+      status: "FAIL",
+      details: "Authorization token is missing",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, "monitor@userapp");
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        status: "FAIL",
+        details: "No user found with the provided token",
+      });
+    }
+
+    res.status(200).json({
+      message: "User fetched successfully",
+      status: "OK",
+      details: user,
+    });
+  } catch (error) {
+    res.status(401).json({
+      message: "Invalid token",
+      status: "FAIL",
+      details: error.message,
+    });
+  }
+};
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
   deleteUser,
   updateUser,
+  loginUser,
+  getUserFromToken,
 };
