@@ -226,7 +226,7 @@ const updateUser = async (req, res) => {
 const fetchSingleUserFromToken = async (req, res) => {
   try {
     const userId = req.user.id; // Access the user ID from the middleware
-    const user = await User.findById(userId);
+    const user = await User.findById(7);
     console.log("User details:", user);
 
     if (!user) {
