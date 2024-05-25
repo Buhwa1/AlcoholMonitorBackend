@@ -124,13 +124,13 @@ const getUsers = async (req, res) => {
 const getUser = async (req, res) => {
   const { id } = req.params;
 
-  // if (!mongoose.Types.ObjectId.isValid(id)) {
-  //   return res.status(400).json({
-  //     message: "Invalid user ID 1",
-  //     status: "FAIL",
-  //     details: "No user found",
-  //   });
-  // }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+      message: "Invalid user ID 1",
+      status: "FAIL",
+      details: "No user found",
+    });
+  }
 
   try {
     const user = await User.findById(id);
@@ -239,8 +239,11 @@ const fetchSingleUserFromToken = async (req, res) => {
     if (!user) {
       return res.status(400).send("User not found.");
     }
-
-    res.status(200).send(user);
+    res.status(200).json({
+      message: "User fetched successfully",
+      status: "OK",
+      details: user,
+    });
   } catch (error) {
     return res.status(401).send(error);
   }
