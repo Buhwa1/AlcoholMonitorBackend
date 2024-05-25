@@ -21,6 +21,14 @@ const userSchema = new Schema(
     token: {
       type: String, // You can specify the type of the token field
     },
+    firstname: {
+      type: String,
+      required: true,
+    },
+    lastname: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
