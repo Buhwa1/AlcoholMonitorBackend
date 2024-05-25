@@ -124,13 +124,13 @@ const getUsers = async (req, res) => {
 const getUser = async (req, res) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({
-      message: "Invalid user ID 1",
-      status: "FAIL",
-      details: "No user found",
-    });
-  }
+  // if (!mongoose.Types.ObjectId.isValid(id)) {
+  //   return res.status(400).json({
+  //     message: "Invalid user ID 1",
+  //     status: "FAIL",
+  //     details: "No user found",
+  //   });
+  // }
 
   try {
     const user = await User.findById(id);
@@ -224,25 +224,39 @@ const updateUser = async (req, res) => {
 };
 
 const fetchSingleUserFromToken = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
+  const token = req.headers.Authorization?.split(" ")[1];
 
   if (!token) {
-    return res.status(403).send("Not authenticated.");
+    return res.status(401).json({
+      message: "No token provided",
+      status: "FAIL",
+      details: "Authorization token is missing",
+    });
   }
 
-  let payload = null;
-
   try {
-    payload = jwt.verify(token, "monitor@userapp");
-    const user = await User.findById(payload.id);
+    const decoded = jwt.verify(token, "monitor@userapp");
+    const user = await User.findById(decoded.id);
 
     if (!user) {
-      return res.status(400).send("User not found.");
+      return res.status(404).json({
+        message: "User not found",
+        status: "FAIL",
+        details: "No user found with the provided token",
+      });
     }
 
-    res.status(200).send(user);
+    res.status(200).json({
+      message: "User fetched successfully",
+      status: "OK",
+      details: user,
+    });
   } catch (error) {
-    return res.status(401).send(error);
+    res.status(401).json({
+      message: "Invalid token",
+      status: "FAIL",
+      details: error.message,
+    });
   }
 };
 
