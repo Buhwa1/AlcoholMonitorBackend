@@ -234,20 +234,13 @@ const fetchSingleUserFromToken = async (req, res) => {
 
   try {
     payload = jwt.verify(token, "monitor@userapp");
+    const user = await User.findById(payload.id);
 
-    User.findOne({ _id: payload.id }).then((data) => {
-      return res.send({ status: "OK", details: data });
-    });
-    // const user = await User.findById(payload.id);
+    if (!user) {
+      return res.status(400).send("User not found.");
+    }
 
-    // if (!user) {
-    //   return res.status(400).send("User not found.");
-    // }
-    // res.status(200).json({
-    //   message: "User fetched successfully",
-    //   status: "OK",
-    //   details: user,
-    // });
+    res.status(200).send(user);
   } catch (error) {
     return res.status(401).send(error);
   }
