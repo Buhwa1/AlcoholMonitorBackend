@@ -224,7 +224,7 @@ const updateUser = async (req, res) => {
 };
 
 const fetchSingleUserFromToken = async (req, res) => {
-  const token = req.headers.Authorization?.split(" ")[1];
+  const token = req.headers.authorization?.split(" ")[1];
   console.log("Error:", token);
 
   if (!token) {
