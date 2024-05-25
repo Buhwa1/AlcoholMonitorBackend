@@ -224,22 +224,11 @@ const updateUser = async (req, res) => {
 };
 
 const fetchSingleUserFromToken = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  console.log("Error:", token);
-
-  if (!token) {
-    return res.status(401).json({
-      message: "No token provided",
-      status: "FAIL",
-      details: "Authorization token is missing",
-    });
-  }
-
   try {
-    const decoded = jwt.decode(token, "monitor@userapp");
-    console.log("Error:", decoded);
-    const user = await User.findById(decoded.id);
+    const userId = req.user.id; // Access the user ID from the middleware
+    const user = await User.findById(userId);
     console.log("User details:", user);
+
     if (!user) {
       return res.status(404).json({
         message: "User not found",
@@ -255,8 +244,8 @@ const fetchSingleUserFromToken = async (req, res) => {
     });
   } catch (error) {
     console.error("Error:", error);
-    res.status(401).json({
-      message: "Invalid token",
+    res.status(500).json({
+      message: "Failed to fetch user",
       status: "FAIL",
       details: error.message,
     });
