@@ -17,11 +17,11 @@ router.post("/login", loginUser);
 
 router.get("/single", fetchSingleUserFromToken);
 
+router.post("/create", createUser);
+
 router.get("/list", authenticateToken, getUsers);
 
 router.get("/:id", authenticateToken, getUser);
-
-router.post("/create", createUser);
 
 router.delete("/delete/:id", authenticateToken, deleteUser);
 
