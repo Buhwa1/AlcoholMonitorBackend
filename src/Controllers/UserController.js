@@ -236,7 +236,7 @@ const fetchSingleUserFromToken = async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, "monitor@userapp");
+    const decoded = jwt.decode(token, "monitor@userapp");
     console.log("Error:", decoded);
     const user = await User.findById(decoded.id);
     console.log("User details:", user);

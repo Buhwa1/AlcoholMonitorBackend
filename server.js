@@ -5,10 +5,6 @@ const userRoutes = require("./src/routes/user");
 
 const app = express();
 const mongoose = require("mongoose");
-app.use(cors());
-app.use(express.json());
-
-app.use("/api/user", userRoutes);
 
 // app.use("/api/workouts", workoutRoutes);
 
@@ -23,6 +19,11 @@ mongoose
   .catch((error) => {
     console.log(error);
   });
+
+app.use(cors());
+app.use(express.json());
+
+app.use("/api/user", userRoutes);
 
 // app.get("/", (req, res) => {
 //   res.send("Welcome to my server!");
