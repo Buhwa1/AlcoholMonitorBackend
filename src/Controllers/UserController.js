@@ -3,64 +3,6 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const getUsers = async (req, res) => {
-  try {
-    const users = await User.find({});
-    if (users.length === 0) {
-      return res.status(200).json({
-        message: "No users found",
-        status: "OK",
-        details: [],
-      });
-    }
-    res.status(200).json({
-      message: "Users fetched successfully",
-      status: "OK",
-      details: users,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch users",
-      status: "FAIL",
-      details: error.message,
-    });
-  }
-};
-
-const getUser = async (req, res) => {
-  const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({
-      message: "Invalid user ID",
-      status: "FAIL",
-      details: "No user found",
-    });
-  }
-
-  try {
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(200).json({
-        message: "User not found",
-        status: "OK",
-        details: "No user found",
-      });
-    }
-    res.status(200).json({
-      message: "User fetched successfully",
-      status: "OK",
-      details: user,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch user",
-      status: "FAIL",
-      details: error.message,
-    });
-  }
-};
-
 //SIGN UP USER
 const createUser = async (req, res) => {
   const { email, phoneNumber, password } = req.body;
@@ -155,12 +97,70 @@ const loginUser = async (req, res) => {
   }
 };
 
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({});
+    if (users.length === 0) {
+      return res.status(200).json({
+        message: "No users found",
+        status: "OK",
+        details: [],
+      });
+    }
+    res.status(200).json({
+      message: "Users fetched successfully",
+      status: "OK",
+      details: users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch users",
+      status: "FAIL",
+      details: error.message,
+    });
+  }
+};
+
+const getUser = async (req, res) => {
+  const { id } = req.params;
+
+  // if (!mongoose.Types.ObjectId.isValid(id)) {
+  //   return res.status(400).json({
+  //     message: "Invalid user ID 1",
+  //     status: "FAIL",
+  //     details: "No user found",
+  //   });
+  // }
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(200).json({
+        message: "User not found",
+        status: "OK",
+        details: "No user found",
+      });
+    }
+    res.status(200).json({
+      message: "User fetched successfully",
+      status: "OK",
+      details: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch user",
+      status: "FAIL",
+      details: error.message,
+    });
+  }
+};
+
 const deleteUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({
-      message: "Invalid user ID",
+      message: "Invalid user ID 2",
       status: "FAIL",
       details: "No user found",
     });
@@ -194,7 +194,7 @@ const updateUser = async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({
-      message: "Invalid user ID",
+      message: "Invalid user ID 3",
       status: "FAIL",
       details: "No user found",
     });
@@ -224,7 +224,7 @@ const updateUser = async (req, res) => {
 };
 
 const fetchSingleUserFromToken = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const token = req.headers.Authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({
@@ -236,7 +236,6 @@ const fetchSingleUserFromToken = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, "monitor@userapp");
-
     const user = await User.findById(decoded.id);
 
     if (!user) {
