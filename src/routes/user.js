@@ -14,13 +14,13 @@ const authenticateToken = require("../Middleware/authenticationToken");
 const router = express.Router();
 
 router.post("/login", loginUser);
-router.get("/single", authenticateToken, fetchSingleUserFromToken);
 router.post("/create", createUser);
 router.get("/list", authenticateToken, getUsers);
+router.get("/single", authenticateToken, fetchSingleUserFromToken);
 
 // General routes last
-router.get("/:id", authenticateToken, getUser);
 router.delete("/delete/:id", authenticateToken, deleteUser);
 router.patch("/update/:id", authenticateToken, updateUser);
+router.get("/single/:id", authenticateToken, getUser);
 
 module.exports = router;
