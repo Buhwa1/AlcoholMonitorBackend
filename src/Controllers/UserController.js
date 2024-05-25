@@ -5,9 +5,13 @@ const jwt = require("jsonwebtoken");
 
 //SIGN UP USER
 const createUser = async (req, res) => {
-  const { email, phoneNumber, password } = req.body;
+  const { firstname, lastname, email, phoneNumber, password } = req.body;
 
   if (
+    firstname &&
+    firstname.length > 0 &&
+    lastname &&
+    lastname.length > 0 &&
     email &&
     email.length > 0 &&
     phoneNumber &&
@@ -21,6 +25,8 @@ const createUser = async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       const user = await User.create({
+        firstname,
+        lastname,
         email,
         phoneNumber,
         password: hashedPassword,
