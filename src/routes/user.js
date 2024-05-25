@@ -21,6 +21,6 @@ router.get("/single", authenticateToken, fetchSingleUserFromToken);
 // General routes last
 router.delete("/delete/:id", authenticateToken, deleteUser);
 router.patch("/update/:id", authenticateToken, updateUser);
-router.get("/single/:id", authenticateToken, getUser);
+// router.get("/single/:id", authenticateToken, getUser);
 
 module.exports = router;
