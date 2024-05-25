@@ -21,6 +21,7 @@ const authenticationToken = (req, res, next) => {
       });
     }
     req.user = user;
+    res.send(user);
     next();
   });
 };
