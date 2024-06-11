@@ -2,6 +2,8 @@ require("dotenv").config();
 const cors = require("cors");
 const express = require("express");
 const userRoutes = require("./src/routes/user");
+const alcoholRoutes = require("./src/routes/alcohol");
+const vitalsRoutes = require("./src/routes/vitals");
 
 const app = express();
 const mongoose = require("mongoose");
@@ -24,6 +26,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/user", userRoutes);
+app.use("/api/alcohol", alcoholRoutes);
+app.use("/api/vitals", vitalsRoutes);
 
 // app.get("/", (req, res) => {
 //   res.send("Welcome to my server!");

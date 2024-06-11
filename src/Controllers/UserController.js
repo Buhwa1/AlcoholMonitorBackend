@@ -7,75 +7,84 @@ const jwt = require("jsonwebtoken");
 const createUser = async (req, res) => {
   const { firstname, lastname, email, phoneNumber, password } = req.body;
 
-  if (
-    firstname &&
-    firstname.length > 0 &&
-    lastname &&
-    lastname.length > 0 &&
-    email &&
-    email.length > 0 &&
-    phoneNumber &&
-    phoneNumber.length > 0 &&
-    password &&
-    password.length > 0
-  ) {
-    try {
-      // Hash the password
-      const saltRounds = 10; // You can adjust the number of salt rounds as needed
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
+  const missingFields = [];
 
-      const user = await User.create({
-        firstname,
-        lastname,
-        email,
-        phoneNumber,
-        password: hashedPassword,
-      });
-      if (user) {
-        return res.status(200).json({
-          message: "User created successfully",
-          status: "OK",
-          details: user,
-        });
-      }
-    } catch (error) {
-      return res.status(400).json({
-        message: "User creation failed",
-        status: "FAIL",
-        details: error.message,
-      });
-    }
-  } else {
+  if (!firstname || firstname.length === 0) missingFields.push("firstname");
+  if (!lastname || lastname.length === 0) missingFields.push("lastname");
+  if (!email || email.length === 0) missingFields.push("email");
+  if (!phoneNumber || phoneNumber.length === 0)
+    missingFields.push("phoneNumber");
+  if (!password || password.length === 0) missingFields.push("password");
+
+  if (missingFields.length > 0) {
     return res.status(400).json({
       message: "Complete all fields and try again",
       status: "FAIL",
-      details: "Missing or empty fields",
+      details: `Missing or empty fields: ${missingFields.join(", ")}`,
+    });
+  }
+
+  try {
+    // Hash the password
+    const saltRounds = 10; // You can adjust the number of salt rounds as needed
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const user = await User.create({
+      firstname,
+      lastname,
+      email,
+      phoneNumber,
+      password: hashedPassword,
+    });
+
+    if (user) {
+      return res.status(200).json({
+        message: "User created successfully",
+        status: "OK",
+        details: user,
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      message: "User creation failed",
+      status: "FAIL",
+      details: error.message,
     });
   }
 };
 
-//LOGIN USER
+// LOGIN USER
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  // Check if email and password are provided
-  if (!email || !password) {
+  const missingFields = [];
+  if (!email) missingFields.push("email");
+  if (!password) missingFields.push("password");
+
+  if (missingFields.length > 0) {
     return res.status(400).json({
       message: "Email and password are required",
       status: "FAIL",
-      details: "Missing email or password",
+      details: `Missing fields: ${missingFields.join(", ")}`,
     });
   }
 
   try {
     const user = await User.findOne({ email });
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!user && !isPasswordValid) {
+    if (!user) {
       return res.status(404).json({
         message: "Wrong username or email!",
         status: "FAIL",
         details: "Wrong username or email!",
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(404).json({
+        message: "Wrong password!",
+        status: "FAIL",
+        details: "Wrong password!",
       });
     }
 
@@ -103,6 +112,7 @@ const loginUser = async (req, res) => {
   }
 };
 
+// GET USERS
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({});
@@ -127,23 +137,24 @@ const getUsers = async (req, res) => {
   }
 };
 
+// GET USER
 const getUser = async (req, res) => {
   const { id } = req.params;
 
-  // if (!mongoose.Types.ObjectId.isValid(id)) {
-  //   return res.status(400).json({
-  //     message: "Invalid user ID 1",
-  //     status: "FAIL",
-  //     details: "No user found",
-  //   });
-  // }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+      message: "Invalid user ID",
+      status: "FAIL",
+      details: "No user found",
+    });
+  }
 
   try {
     const user = await User.findById(id);
     if (!user) {
-      return res.status(200).json({
+      return res.status(404).json({
         message: "User not found",
-        status: "OK",
+        status: "FAIL",
         details: "No user found",
       });
     }
@@ -161,12 +172,13 @@ const getUser = async (req, res) => {
   }
 };
 
+// DELETE USER
 const deleteUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({
-      message: "Invalid user ID 2",
+      message: "Invalid user ID",
       status: "FAIL",
       details: "No user found",
     });
@@ -195,12 +207,13 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// UPDATE USER
 const updateUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({
-      message: "Invalid user ID 3",
+      message: "Invalid user ID",
       status: "FAIL",
       details: "No user found",
     });
@@ -229,6 +242,7 @@ const updateUser = async (req, res) => {
   }
 };
 
+// FETCH SINGLE USER FROM TOKEN
 const fetchSingleUserFromToken = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
 
