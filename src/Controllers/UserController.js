@@ -124,6 +124,8 @@ const loginUser = async (req, res) => {
 
 // GET USERS
 const getUsers = async (req, res) => {
+  const timeZone = "Africa/Kampala";
+
   try {
     const users = await User.find({});
     if (users.length === 0) {
@@ -133,10 +135,34 @@ const getUsers = async (req, res) => {
         details: [],
       });
     }
+
+    const formatDate = (date) => {
+      const momentDate = moment.tz(date, timeZone);
+      const today = moment().tz(timeZone).startOf("day");
+      const yesterday = moment()
+        .tz(timeZone)
+        .subtract(1, "days")
+        .startOf("day");
+
+      if (momentDate.isSame(today, "d")) {
+        return "Today, " + momentDate.format("h:mm A");
+      } else if (momentDate.isSame(yesterday, "d")) {
+        return "Yesterday, " + momentDate.format("h:mm A");
+      } else {
+        return momentDate.format("MMMM D, YYYY, h:mm A z");
+      }
+    };
+
+    const formattedUsers = users.map((user) => ({
+      ...user.toObject(),
+      createdAt: formatDate(user.createdAt),
+      updatedAt: formatDate(user.updatedAt),
+    }));
+
     res.status(200).json({
       message: "Users fetched successfully",
       status: "OK",
-      details: users,
+      details: formattedUsers,
     });
   } catch (error) {
     res.status(500).json({
