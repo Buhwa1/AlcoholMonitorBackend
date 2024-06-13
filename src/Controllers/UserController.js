@@ -149,7 +149,7 @@ const getUsers = async (req, res) => {
       } else if (momentDate.isSame(yesterday, "d")) {
         return "Yesterday, " + momentDate.format("h:mm A");
       } else {
-        return momentDate.format("MMMM D, YYYY, h:mm A z");
+        return momentDate.format("MMMM D, YYYY, h:mm A");
       }
     };
 
