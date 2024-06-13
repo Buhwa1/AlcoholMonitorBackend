@@ -76,11 +76,11 @@ const fetchAlcoholReadingFromToken = async (req, res) => {
       }
     };
 
-    const formattedAlcohol = alcohol.map((alc) => ({
-      ...alc.toObject(),
-      createdAt: formatDate(alc.createdAt),
-      updatedAt: formatDate(alc.updatedAt),
-    }));
+    const formattedAlcohol = {
+      ...alcohol.toObject(),
+      createdAt: formatDate(alcohol.createdAt),
+      updatedAt: formatDate(alcohol.updatedAt),
+    };
 
     res.status(200).json({
       message: "Alcohol reading fetched successfully",
