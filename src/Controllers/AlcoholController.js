@@ -48,6 +48,7 @@ const fetchAlcoholReadingFromToken = async (req, res) => {
   try {
     const decoded = jwt.verify(token, "monitor@userapp");
     const alcohol = await Alcohol.findOne({ user_id: decoded.id });
+    const timeZone = "Africa/Kampala";
 
     if (!vital) {
       return res.status(404).json({
@@ -57,10 +58,33 @@ const fetchAlcoholReadingFromToken = async (req, res) => {
       });
     }
 
+    const formatDate = (date) => {
+      const momentDate = moment.tz(date, timeZone);
+      const today = moment().tz(timeZone).startOf("day");
+      const yesterday = moment()
+        .tz(timeZone)
+        .subtract(1, "days")
+        .startOf("day");
+
+      if (momentDate.isSame(today, "d")) {
+        return "Today, " + momentDate.format("h:mm A");
+      } else if (momentDate.isSame(yesterday, "d")) {
+        return "Yesterday, " + momentDate.format("h:mm A");
+      } else {
+        return momentDate.format("MMMM D, YYYY, h:mm A");
+      }
+    };
+
+    const formattedAlcohol = alcohol.map((alc) => ({
+      ...alc.toObject(),
+      createdAt: formatDate(alc.createdAt),
+      updatedAt: formatDate(alc.updatedAt),
+    }));
+
     res.status(200).json({
       message: "Alcohol reading fetched successfully",
       status: "OK",
-      details: alcohol,
+      details: formattedAlcohol,
     });
   } catch (error) {
     res.status(401).json({

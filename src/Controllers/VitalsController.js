@@ -49,6 +49,7 @@ const fetchVitalsFromToken = async (req, res) => {
   try {
     const decoded = jwt.verify(token, "monitor@userapp");
     const vital = await Vital.findOne({ user_id: decoded.id });
+    const timeZone = "Africa/Kampala";
 
     if (!vital) {
       return res.status(404).json({
@@ -58,10 +59,33 @@ const fetchVitalsFromToken = async (req, res) => {
       });
     }
 
+    const formatDate = (date) => {
+      const momentDate = moment.tz(date, timeZone);
+      const today = moment().tz(timeZone).startOf("day");
+      const yesterday = moment()
+        .tz(timeZone)
+        .subtract(1, "days")
+        .startOf("day");
+
+      if (momentDate.isSame(today, "d")) {
+        return "Today, " + momentDate.format("h:mm A");
+      } else if (momentDate.isSame(yesterday, "d")) {
+        return "Yesterday, " + momentDate.format("h:mm A");
+      } else {
+        return momentDate.format("MMMM D, YYYY, h:mm A");
+      }
+    };
+
+    const formattedVitals = vital.map((vitals) => ({
+      ...vitals.toObject(),
+      createdAt: formatDate(vitals.createdAt),
+      updatedAt: formatDate(vitals.updatedAt),
+    }));
+
     res.status(200).json({
       message: "Vitals fetched successfully",
       status: "OK",
-      details: vital,
+      details: formattedVitals,
     });
   } catch (error) {
     res.status(401).json({
