@@ -2,6 +2,7 @@ const Vital = require("../Models/VitalsModel");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const moment = require("moment-timezone");
 
 //SIGN UP USER
 const createVitals = async (req, res) => {

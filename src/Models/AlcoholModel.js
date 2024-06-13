@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const alcoholSchema = new Schema(
   {
     user_id: {
-      type: Number,
+      type: String,
       required: true,
     },
     alcohol_level: {

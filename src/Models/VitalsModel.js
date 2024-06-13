@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const vitalsSchema = new Schema(
   {
     user_id: {
-      type: Number,
+      type: String,
       required: true,
     },
     oxygen_level: {
