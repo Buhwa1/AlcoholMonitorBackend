@@ -2,11 +2,13 @@ const User = require("../Models/UserModel");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const moment = require("moment-timezone");
 
 //SIGN UP USER
+
 const createUser = async (req, res) => {
   const { firstname, lastname, email, phoneNumber, password } = req.body;
-
+  const timeZone = "Africa/Kampala";
   const missingFields = [];
 
   if (!firstname || firstname.length === 0) missingFields.push("firstname");
@@ -38,10 +40,18 @@ const createUser = async (req, res) => {
     });
 
     if (user) {
+      // Adjust timestamps to the specified time zone
+      const createdAt = moment.tz(user.createdAt, timeZone).format();
+      const updatedAt = moment.tz(user.updatedAt, timeZone).format();
+
       return res.status(200).json({
         message: "User created successfully",
         status: "OK",
-        details: user,
+        details: {
+          ...user.toObject(),
+          createdAt,
+          updatedAt,
+        },
       });
     }
   } catch (error) {
