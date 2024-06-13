@@ -51,7 +51,7 @@ const fetchAlcoholReadingFromToken = async (req, res) => {
     const alcohol = await Alcohol.findOne({ user_id: decoded.id });
     const timeZone = "Africa/Kampala";
 
-    if (!vital) {
+    if (!alcohol) {
       return res.status(404).json({
         message: "User not found",
         status: "FAIL",
