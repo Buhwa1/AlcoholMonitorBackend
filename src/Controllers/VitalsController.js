@@ -1,23 +1,13 @@
 const Vital = require("../Models/VitalsModel");
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const moment = require("moment-timezone");
 
-//SIGN UP USER
+// Create Vitals
 const createVitals = async (req, res) => {
   const { user_id, oxygen_level, bpm_reading } = req.body;
 
   try {
-    // Hash the password
-    // const saltRounds = 10; // You can adjust the number of salt rounds as needed
-    // const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    const vital = await Vital.create({
-      user_id,
-      oxygen_level,
-      bpm_reading,
-    });
+    const vital = await Vital.create({ user_id, oxygen_level, bpm_reading });
 
     if (vital) {
       return res.status(200).json({
@@ -35,21 +25,11 @@ const createVitals = async (req, res) => {
   }
 };
 
-// FETCH SINGLE USER FROM TOKEN
+// Fetch Vitals from Token
 const fetchVitalsFromToken = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
-
-  if (!token) {
-    return res.status(401).json({
-      message: "No token provided",
-      status: "FAIL",
-      details: "Authorization token is missing",
-    });
-  }
-
   try {
-    const decoded = jwt.verify(token, "monitor@userapp");
-    const vital = await Vital.findOne({ user_id: decoded.id });
+    const { id } = req.user;
+    const vital = await Vital.findOne({ user_id: id });
     const timeZone = "Africa/Kampala";
 
     if (!vital) {
@@ -77,11 +57,11 @@ const fetchVitalsFromToken = async (req, res) => {
       }
     };
 
-    const formattedVitals = vital.map((vitals) => ({
-      ...vitals.toObject(),
-      createdAt: formatDate(vitals.createdAt),
-      updatedAt: formatDate(vitals.updatedAt),
-    }));
+    const formattedVitals = {
+      ...vital.toObject(),
+      createdAt: formatDate(vital.createdAt),
+      updatedAt: formatDate(vital.updatedAt),
+    };
 
     res.status(200).json({
       message: "Vitals fetched successfully",
@@ -97,7 +77,4 @@ const fetchVitalsFromToken = async (req, res) => {
   }
 };
 
-module.exports = {
-  createVitals,
-  fetchVitalsFromToken,
-};
+module.exports = { createVitals, fetchVitalsFromToken };
