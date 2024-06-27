@@ -96,7 +96,71 @@ const fetchAlcoholReadingFromToken = async (req, res) => {
   }
 };
 
+// GET USERS
+const getReadings = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  // if (!token) {
+  //   return res.status(401).json({
+  //     message: "No token provided",
+  //     status: "FAIL",
+  //     details: "Authorization token is missing",
+  //   });
+  // }
+
+  const timeZone = "Africa/Kampala";
+
+  try {
+    const decoded = jwt.verify(token, "monitor@userapp");
+    const alcohols = await Alcohol.find({ user_id: decoded.id });
+
+    if (alcohols.length === 0) {
+      return res.status(200).json({
+        message: "No readings found",
+        status: "OK",
+        details: [],
+      });
+    }
+
+    const formatDate = (date) => {
+      const momentDate = moment.tz(date, timeZone);
+      const today = moment().tz(timeZone).startOf("day");
+      const yesterday = moment()
+        .tz(timeZone)
+        .subtract(1, "days")
+        .startOf("day");
+
+      if (momentDate.isSame(today, "d")) {
+        return "Today, " + momentDate.format("h:mm A");
+      } else if (momentDate.isSame(yesterday, "d")) {
+        return "Yesterday, " + momentDate.format("h:mm A");
+      } else {
+        return momentDate.format("MMMM D, YYYY, h:mm A");
+      }
+    };
+
+    const formattedAlcohol = alcohols.map((alcohol) => ({
+      ...alcohol.toObject(),
+      createdAt: formatDate(alcohol.createdAt),
+      updatedAt: formatDate(alcohol.updatedAt),
+    }));
+
+    res.status(200).json({
+      message: "Readings fetched successfully",
+      status: "OK",
+      details: formattedAlcohol,
+    });
+  } catch (error) {
+    res.status(401).json({
+      message: "Invalid token",
+      status: "FAIL",
+      details: error.message,
+    });
+  }
+};
+
 module.exports = {
   createAlcoholReading,
   fetchAlcoholReadingFromToken,
+  getReadings,
 };
