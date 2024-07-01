@@ -150,6 +150,67 @@ const getReadings = async (req, res) => {
       status: "OK",
       details: formattedAlcohol,
     });
+    const getReadings = async (req, res) => {
+      const token = req.headers.authorization?.split(" ")[1];
+
+      // if (!token) {
+      //   return res.status(401).json({
+      //     message: "No token provided",
+      //     status: "FAIL",
+      //     details: "Authorization token is missing",
+      //   });
+      // }
+
+      const timeZone = "Africa/Kampala";
+
+      try {
+        const decoded = jwt.verify(token, "monitor@userapp");
+        const alcohols = await Alcohol.find({ user_id: decoded.id });
+
+        if (alcohols.length === 0) {
+          return res.status(200).json({
+            message: "No readings found",
+            status: "OK",
+            details: { months: [], days: [] }, // Empty arrays for months and days
+          });
+        }
+
+        const formatDate = (date) => {
+          const momentDate = moment.tz(date, timeZone);
+          const monthYear = momentDate.format("MMMM YYYY");
+          const dayOfWeek = momentDate.format("dddd");
+          return { monthYear, dayOfWeek };
+        };
+
+        const groupedReadings = alcohols.reduce(
+          (groups, alcohol) => {
+            const { monthYear, dayOfWeek } = formatDate(alcohol.createdAt);
+            if (!groups.months[monthYear]) {
+              groups.months[monthYear] = [];
+            }
+            if (!groups.days[dayOfWeek]) {
+              groups.days[dayOfWeek] = [];
+            }
+            groups.months[monthYear].push(alcohol);
+            groups.days[dayOfWeek].push(alcohol);
+            return groups;
+          },
+          { months: {}, days: {} }
+        );
+
+        res.status(200).json({
+          message: "Readings fetched successfully",
+          status: "OK",
+          details: groupedReadings,
+        });
+      } catch (error) {
+        res.status(401).json({
+          message: "Invalid token",
+          status: "FAIL",
+          details: error.message,
+        });
+      }
+    };
   } catch (error) {
     res.status(401).json({
       message: "Invalid token",
