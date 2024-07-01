@@ -77,4 +77,66 @@ const fetchVitalsFromToken = async (req, res) => {
   }
 };
 
-module.exports = { createVitals, fetchVitalsFromToken };
+const getVitalsReadings = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  // if (!token) {
+  //   return res.status(401).json({
+  //     message: "No token provided",
+  //     status: "FAIL",
+  //     details: "Authorization token is missing",
+  //   });
+  // }
+
+  const timeZone = "Africa/Kampala";
+
+  try {
+    const decoded = jwt.verify(token, "monitor@userapp");
+    const vitals = await Vital.find({ user_id: decoded.id });
+
+    if (vitals.length === 0) {
+      return res.status(200).json({
+        message: "No readings found",
+        status: "OK",
+        details: [],
+      });
+    }
+
+    const formatDate = (date) => {
+      const momentDate = moment.tz(date, timeZone);
+      const today = moment().tz(timeZone).startOf("day");
+      const yesterday = moment()
+        .tz(timeZone)
+        .subtract(1, "days")
+        .startOf("day");
+
+      if (momentDate.isSame(today, "d")) {
+        return "Today, " + momentDate.format("h:mm A");
+      } else if (momentDate.isSame(yesterday, "d")) {
+        return "Yesterday, " + momentDate.format("h:mm A");
+      } else {
+        return momentDate.format("MMMM D, YYYY, h:mm A");
+      }
+    };
+
+    const formattedVitals = vitals.map((vital) => ({
+      ...vital.toObject(),
+      createdAt: formatDate(vital.createdAt),
+      updatedAt: formatDate(vital.updatedAt),
+    }));
+
+    res.status(200).json({
+      message: "Readings fetched successfully",
+      status: "OK",
+      details: formattedVitals,
+    });
+  } catch (error) {
+    res.status(401).json({
+      message: "Invalid token",
+      status: "FAIL",
+      details: error.message,
+    });
+  }
+};
+
+module.exports = { createVitals, fetchVitalsFromToken, getVitalsReadings };
