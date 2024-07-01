@@ -98,37 +98,37 @@ const getVitalsReadings = async (req, res) => {
       return res.status(200).json({
         message: "No readings found",
         status: "OK",
-        details: [],
+        details: { months: [], days: [] }, // Empty arrays for months and days
       });
     }
 
     const formatDate = (date) => {
       const momentDate = moment.tz(date, timeZone);
-      const today = moment().tz(timeZone).startOf("day");
-      const yesterday = moment()
-        .tz(timeZone)
-        .subtract(1, "days")
-        .startOf("day");
-
-      if (momentDate.isSame(today, "d")) {
-        return "Today, " + momentDate.format("h:mm A");
-      } else if (momentDate.isSame(yesterday, "d")) {
-        return "Yesterday, " + momentDate.format("h:mm A");
-      } else {
-        return momentDate.format("dddd, MMMM D, YYYY, h:mm A"); // Include day of the week
-      }
+      const monthYear = momentDate.format("MMMM YYYY");
+      const dayOfWeek = momentDate.format("dddd");
+      return { monthYear, dayOfWeek };
     };
 
-    const formattedVitals = vitals.map((vital) => ({
-      ...vital.toObject(),
-      createdAt: formatDate(vital.createdAt),
-      updatedAt: formatDate(vital.updatedAt),
-    }));
+    const groupedVitals = vitals.reduce(
+      (groups, vital) => {
+        const { monthYear, dayOfWeek } = formatDate(vital.createdAt);
+        if (!groups.months[monthYear]) {
+          groups.months[monthYear] = [];
+        }
+        if (!groups.days[dayOfWeek]) {
+          groups.days[dayOfWeek] = [];
+        }
+        groups.months[monthYear].push(vital);
+        groups.days[dayOfWeek].push(vital);
+        return groups;
+      },
+      { months: {}, days: {} }
+    );
 
     res.status(200).json({
       message: "Readings fetched successfully",
       status: "OK",
-      details: formattedVitals,
+      details: groupedVitals,
     });
   } catch (error) {
     res.status(401).json({
